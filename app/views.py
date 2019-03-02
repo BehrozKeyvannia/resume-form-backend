@@ -1,23 +1,34 @@
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
+from pprint import pprint
+from random import randint
+from os import listdir
+from os.path import isfile, join
+
 import pdb
+import json
 
 def index(request):
     return HttpResponse("Resume API")
 
 @csrf_exempt
 def create(request):
-    pdb.set_trace()
+    data = extractJsonData(request.body)
     if request.method == 'POST':
-        return JsonResponse({
-            "method": "post"
-        })
+        if data:
+            id = generateId()
+            writeToFile(id, data)
+            return JsonResponse({
+                "id": id
+            })
+        else:
+            return HttpResponse(status=500)
     elif request.method == 'GET':
         return HttpResponseForbidden()
 
 @csrf_exempt
-def edit(request):
+def edit(request, id):
     if request.method == 'POST':
         return JsonResponse({
             "method": "post"
@@ -25,11 +36,66 @@ def edit(request):
     elif request.method == 'GET':
         return HttpResponseForbidden()
 
-def get(request):
-    return HttpResponse("get")
+def get(request, id):
+    if request.method == 'POST':
+        return HttpResponseForbidden()
+    elif request.method == 'GET':
+        return JsonResponse({
+            "method": "get"
+        })
 
 def getAll(request):
-    return HttpResponse("Get All")
+    if request.method == 'GET':
+        path = "./files"
+        allFiles = [f for f in listdir(path) if isfile(join(path, f))]
+        jsonData = []
+        for file in allFiles:
+            id = file.strip(".json")
+            fileData = readFromFile(id)
+            fileData['id'] = id
+            jsonData.append(fileData)
+        return JsonResponse({
+            "data": jsonData
+        })
+    elif request.method == 'POST':
+        return HttpResponseForbidden()
 
-def delete(request):
-    return HttpResponse("Delete")
+@csrf_exempt
+def delete(request, id):
+    if request.method == 'POST':
+        return JsonResponse({
+            "method": "post"
+        })
+    elif request.method == 'GET':
+        return HttpResponseForbidden()
+
+def extractJsonData(value):
+    body_unicode = value.decode('utf-8')
+    body = json.loads(body_unicode)
+    return body
+
+def writeToFile(id, data):
+    try:
+        path = "./files/{}.json".format(id)
+        file = open(path,'w')
+        parsedData = json.loads(str(data).replace("\'", "\""))
+        pretty = json.dumps(parsedData, indent=4)
+        file.write(str(pretty))
+        file.close()
+    except Exception as e:
+        print("type error: " + str(e))
+
+def readFromFile(id):
+    file = open("./files/{}.json".format(id),'r')
+    data = file.read()
+    parsedData = json.loads(str(data))
+    file.close()
+    return parsedData
+
+def random_with_N_digits(n):
+    range_start = 10**(n-1)
+    range_end = (10**n)-1
+    return randint(range_start, range_end)
+
+def generateId():
+    return random_with_N_digits(5)
