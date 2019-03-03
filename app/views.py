@@ -5,6 +5,7 @@ from pprint import pprint
 from random import randint
 from os import listdir
 from os.path import isfile, join
+import os
 
 import pdb
 import json
@@ -30,8 +31,10 @@ def create(request):
 @csrf_exempt
 def edit(request, id):
     if request.method == 'POST':
+        data = extractJsonData(request.body)
+        writeToFile(id, data)
         return JsonResponse({
-            "method": "post"
+            "data": "saved"
         })
     elif request.method == 'GET':
         return HttpResponseForbidden()
@@ -62,9 +65,10 @@ def getAll(request):
 
 @csrf_exempt
 def delete(request, id):
-    if request.method == 'POST':
+    if request.method == 'DELETE':
+        deleteFile(id)
         return JsonResponse({
-            "method": "post"
+            "data": "deleted"
         })
     elif request.method == 'GET':
         return HttpResponseForbidden()
@@ -91,6 +95,12 @@ def readFromFile(id):
     parsedData = json.loads(str(data))
     file.close()
     return parsedData
+
+def deleteFile(id):
+    try:
+        os.remove("./files/{}.json".format(id));
+    except Exception as e:
+        print("deleteFileError: " + str(e));
 
 def random_with_N_digits(n):
     range_start = 10**(n-1)
