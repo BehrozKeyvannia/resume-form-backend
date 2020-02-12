@@ -6,6 +6,7 @@ from random import randint
 from os import listdir
 from os.path import isfile, join
 import os
+from pathlib import Path
 
 import pdb
 import json
@@ -50,6 +51,7 @@ def get(request, id):
 def getAll(request):
     if request.method == 'GET':
         path = "./files"
+        Path(path).mkdir(parents=True, exist_ok=True)
         allFiles = [f for f in listdir(path) if isfile(join(path, f))]
         jsonData = []
         for file in allFiles:
