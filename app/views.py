@@ -1,13 +1,13 @@
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
-from pprint import pprint
 from random import randint
 from os import listdir
 from os.path import isfile, join
 import os
 from pathlib import Path
 
+import pprint
 import pdb
 import json
 
@@ -56,9 +56,10 @@ def getAll(request):
         jsonData = []
         for file in allFiles:
             id = file.strip(".json")
-            fileData = readFromFile(id)
-            fileData['id'] = id
-            jsonData.append(fileData)
+            if readFromFile(id):
+                fileData = readFromFile(id)
+                fileData['id'] = id
+                jsonData.append(fileData)
         return JsonResponse({
             "data": jsonData
         })
@@ -81,22 +82,23 @@ def extractJsonData(value):
     return body
 
 def writeToFile(id, data):
-    try:
-        path = "./files/{}.json".format(id)
-        file = open(path,'w')
-        parsedData = json.loads(str(data).replace("\'", "\""))
-        pretty = json.dumps(parsedData, indent=4)
-        file.write(str(pretty))
-        file.close()
-    except Exception as e:
-        print("type error: " + str(e))
+    path = "./files/{}.json".format(id)
+    file = open(path,'w')
+    # parsedData = json.dumps(str(data).replace("\'", "\""), indent=4)
+    parsedData = json.dumps(data, indent=4)
+    file.write(str(parsedData))
+    file.close()
+
 
 def readFromFile(id):
-    file = open("./files/{}.json".format(id),'r')
-    data = file.read()
-    parsedData = json.loads(str(data))
-    file.close()
-    return parsedData
+    try:
+        file = open("./files/{}.json".format(id),'r')
+        data = file.read()
+        parsedData = json.loads(str(data))
+        file.close()
+        return parsedData
+    except:
+        return False
 
 def deleteFile(id):
     try:
