@@ -20,6 +20,7 @@ def create(request):
     if request.method == 'POST':
         if data:
             id = generateId()
+            data['id'] = id
             writeToFile(id, data)
             return JsonResponse({
                 "id": id
@@ -44,8 +45,11 @@ def get(request, id):
     if request.method == 'POST':
         return HttpResponseForbidden()
     elif request.method == 'GET':
+        jsonData = []
+        fileData = readFromFile(id)
+        jsonData.append(fileData)
         return JsonResponse({
-            "method": "get"
+            "data": jsonData
         })
 
 def getAll(request):
@@ -58,8 +62,11 @@ def getAll(request):
             id = file.strip(".json")
             if readFromFile(id):
                 fileData = readFromFile(id)
-                fileData['id'] = id
-                jsonData.append(fileData)
+                jsonData.append({
+                    'id': fileData['id'],
+                    'firstname': fileData['general']['firstname'],
+                    'lastname': fileData['general']['lastname']
+                })
         return JsonResponse({
             "data": jsonData
         })

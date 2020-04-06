@@ -1,0 +1,43 @@
+{
+    "general": {
+        "firstname": "Behroz",
+        "lastname": "Keyvannia",
+        "age": 51,
+        "telephone": "07070707",
+        "email": "lala@l.se",
+        "linkedin": "",
+        "summary": "Haha "
+    },
+    "educations": [
+        {
+            "name": "betb",
+            "fromDate": "2020-02-29T23:00:00.000Z",
+            "current": true,
+            "description": "bhthb",
+            "key": 0
+        }
+    ],
+    "experiences": [
+        {
+            "clientName": "h4t",
+            "title": "hgt4h",
+            "toDate": "2020-02-29T23:00:00.000Z",
+            "fromDate": "2020-02-29T23:00:00.000Z",
+            "current": false,
+            "description": "4th4",
+            "key": 0
+        }
+    ],
+    "misc": {
+        "misc": "4th4"
+    },
+    "references": [
+        {
+            "referenceName": "4th",
+            "workplace": "t4h",
+            "phoneNumber": "h4t4",
+            "key": 0
+        }
+    ],
+    "id": 56221
+}
